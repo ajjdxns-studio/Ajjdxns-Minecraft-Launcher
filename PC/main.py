@@ -3,16 +3,15 @@ Ajjdxns minecraft launcher
 (C) 2024 Ajjdxns
 '''
 
-import sys
 import os
-import time
 from console_start import console
 import requests
 import zipfile
 import json
 from tqdm import tqdm
+from rich.table import Table
 
-heads = {"Accept":"application/json","Accept-Language":"zh-CN"}
+UserHeads = {"requestUser":"true"}
 
 def start():
     pass
@@ -24,12 +23,12 @@ def debug(func):
     return wrapper
   
 def download(url: str, fname: str):
-    # 用流stream的方式获取url的数据
+    # 用流 stream 的方式获取 url 的数据
     resp = requests.get(url, stream=True)
-    # 拿到文件的长度，并把total初始化为0
+    # 拿到文件的长度，并把 total 初始化为 0
     total = int(resp.headers.get('content-length', 0))
-    # 打开当前目录的fname文件(名字你来传入)
-    # 初始化tqdm，传入总数，文件名等数据，接着就是写入，更新等操作了
+    # 打开当前目录的 fname 文件 (名字你来传入)
+    # 初始化 tqdm，传入总数，文件名等数据，接着就是写入，更新等操作了
     with open(fname, 'wb') as file, tqdm(
         desc=fname,
         total=total,
@@ -42,10 +41,17 @@ def download(url: str, fname: str):
             bar.update(size)
 
 command = ""
-argv = sys.argv
 
 console.print("")
-console.print("Ajjdxns minecraft launcher Copyright (C) 2024 Ajjdxns studio\n本程序没有任何保证，输入“license 15”了解更多。\n这是一个自由软件，欢迎再次分发。输入“license 3”了解详情。\n随程序应该有一份GPL3.0协议，如果没有找到，从这里找：https://www.gnu.org/licenses/。\n使用命令“version”查看更多协议")
+console.print("""
+Ajjdxns minecraft launcher
+Copyright (C) 2024 Ajjdxns studio
+本程序没有任何保证，输入“license 15”了解更多。
+这是一个自由软件，欢迎再次分发。输入“license 3”了解详情。
+随程序应有一份 GPL3.0 协议，如果没有找到，从这里找：https://www.gnu.org/licenses/。
+
+使用命令“version”查看更多协议
+""")
 
 def main():
     '''
@@ -56,7 +62,20 @@ def main():
         if command == "quit":
             os._exit(1)
         elif command == "version":
-            console.print('Ajjdxns minecraft launcher\nCopyright (C) Ajjdxns studio(电子邮件：wyj121023@163.com,备用地址：ajjdxns@outlook.com)\nver. alpha 0.1\n基于GPL 3.0\n我们希望这个程序对你有用，但是不保证它真的好用。\n随程序应该有一份GPL3.0协议，如果没有找到，从这里找：https://www.gnu.org/licenses/。\n以下简称AML启动器。\n（可看可不看）\nAML启动器根据GPL3.0协议，允许您进行软件破解、源代码分发以及分发破解版软件。\n但是破解版软件并不属于AML启动器的一部分，向外分发时请不要使用与本产品相近或类似的名字。\n在您分发该项目副本时，请注明该文件的源代码地址和分发平台。\n此外，请您遵守附加条款：\n1.修改后的代码与Ajjdxns studio没有任何关系，我们也不对此负责。\n2.修改后的代码中请注明代码的原作者。\n3.修改后的代码请不要用Ajjdxns(代码作者)的名义宣传。\n4.请让您的软件使用者明白，这个软件是基于Ajjdxns studio的源代码修改的，Ajjdxns studio对其中的BUG概不负责。\n5.如果有涉及到钱的修改版，修改版作者将不能继续使用软件最新版进行修改，同时停止作者对修改版软件中未修改部分的支持。\n')
+            console.print("""Ajjdxns minecraft launcher
+            Copyright (C) Ajjdxns studio(电子邮件：wyj121023@163.com，备用地址：ajjdxns@outlook.com)
+            ver. alpha 0.1 
+            
+            基于 GPL 3.0 我们希望这个程序对你有用，但是不保证它真的好用。
+            随程序应有一份 GPL3.0 协议，如果没有找到，从这里找：https://www.gnu.org/licenses/。以下简称 AML 启动器。
+            AML 启动器根据 GPL3.0 协议，允许您进行软件破解、源代码分发以及分发破解版软件。但是破解版软件并不属于 AML 启动器的一部分，向外分发时请不要使用与本产品相近或类似的名字。在您分发该项目副本时，请注明该文件的源代码地址和分发平台。
+            此外，请您遵守附加条款：
+            1.修改后的代码与 Ajjdxns studio 没有任何关系，我们也不对此负责。
+            2.修改后的代码中请注明代码的原作者。
+            3.修改后的代码请不要用 Ajjdxns(代码作者) 的名义宣传。
+            4.请让您的软件使用者明白，这个软件是基于 Ajjdxns studio 的源代码修改的，Ajjdxns studio 对其中的 BUG 概不负责。
+            5.如果有涉及到钱的修改版，修改版作者将不能继续使用软件最新版进行修改，同时停止作者对修改版软件中未修改部分的支持。
+            """)
         elif command == "license 15":
             console.print('''  THERE IS NO WARRANTY FOR THE PROGRAM, TO THE EXTENT PERMITTED BY
 APPLICABLE LAW.  EXCEPT WHEN OTHERWISE STATED IN WRITING THE COPYRIGHT
@@ -80,6 +99,7 @@ modification of the work as a means of enforcing, against the work's
 users, your or third parties' legal rights to forbid circumvention of
 technological measures.''')
         elif command == 'download minecraft':
+            #下载
             console.print("游戏开始下载...")
             with open(r'minecraft.zip','w') as f:
                 f.write('')
@@ -88,19 +108,33 @@ technological measures.''')
             console.print('即将开始解压文件至"./.minecraft/defaultversion"文件夹（应该没人会往里面放什么东西吧）。')
             with zipfile.ZipFile("minecraft.zip",'r') as f:
                 for file in f.namelist():
-                    console.print("输出文件：", file)
+                    console.print("[INFO] 输出文件：", file)
                     f.extract(file,"./.minecraft/defaultversion/")  
             
-        elif command == 'start game':
+        elif command == 'sart game':
             start()
 
         elif command == 'login':
-            console.print("开始登录...")
-            console.print("正在读取配置文件...")
-            with open(r'config.json') as f:
+            #登录
+            console.print("[INFO] 开始登录...")
+            console.print("[INFO] 正在读取配置文件...")
+            with open('config.json') as f:
                 config = json.load(f)
             APIRoot = config['login']['API Root']
-            console.print(APIRoot)
+            try:
+                RootGet = requests.get(APIRoot)
+            except:
+                #出错后的红色用户提示
+                console.print("[red][ERROR] 对不起，我们遇到了一个严重错误：网络请求错误。")
+                console.print("[red][ERROR] 请尝试修改配置文件。")
+                os._exit()
+            RootGetDirt = json.loads(RootGet.text)
+            try:
+                console.print("[INFO] 服务器名称："+RootGetDirt["meta"]["serverName"])
+            except:
+                console.print('[yellow][WARN] 对不起，我们遇到了一个问题：服务器未返回"serverName"字段')
+            UserName = console.input("请输入账号")
+            PassWord = 
 
 if __name__ == "__main__":
     main()
