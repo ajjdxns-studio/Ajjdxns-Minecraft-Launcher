@@ -19,8 +19,7 @@ def start():
 
 def debug(func):
     def wrapper():
-        console.print("[DEBUG]go run {}()".format(func.__name__))
-        console.print("[DEBUG]go run {}()".format(func.__name__))
+        console.print("[DEBUG]run {}()".format(func.__name__))
         return func()
     return wrapper
   
@@ -97,8 +96,11 @@ technological measures.''')
 
         elif command == 'login':
             console.print("开始登录...")
-            time.sleep(1)
-            
+            console.print("正在读取配置文件...")
+            with open(r'config.json') as f:
+                config = json.load(f)
+            APIRoot = config['login']['API Root']
+            console.print(APIRoot)
 
 if __name__ == "__main__":
     main()
