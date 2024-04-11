@@ -111,7 +111,7 @@ technological measures.''')
                     console.print("[INFO] 输出文件：", file)
                     f.extract(file,"./.minecraft/defaultversion/")  
             
-        elif command == 'sart game':
+        elif command == 'start game':
             start()
 
         elif command == 'login':
