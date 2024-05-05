@@ -121,8 +121,12 @@ technological measures.''')
             #登录
             logging.info("开始登录...")
             logging.info("正在读取配置文件...")
-            with open('config.json') as f:
-                config = json.load(f)
+            try:
+                with open('config.json') as f:
+                    config = json.load(f)
+            except:
+                logging.error("对不起，您使用了错误的方法打开程序，请重新尝试。")
+                os._exit()
             APIRoot = config['login']['API Root']
             try:
                 RootGet = requests.get(APIRoot)
