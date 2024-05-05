@@ -8,17 +8,22 @@ from console_start import console
 import requests
 import zipfile
 import json
+import logging
 from tqdm import tqdm
 from rich.table import Table
 
+log = logging.getLogger()
+log.setLevel(logging.INFO)
 UserHeads = {"requestUser":"true"}
+formatter = logging.Formatter("[%(asctime)s] [%(filenane)s/%(levelname)s] %(message)s")
+log.setFormatter(formatter)
 
 def start():
     pass
 
 def debug(func):
     def wrapper():
-        console.print("[DEBUG]run {}()".format(func.__name__))
+        logging.debug("run {}()".format(func.__name__))
         return func()
     return wrapper
   
@@ -100,15 +105,15 @@ users, your or third parties' legal rights to forbid circumvention of
 technological measures.''')
         elif command == 'download minecraft':
             #下载
-            console.print("游戏开始下载...")
+            logging.info("游戏开始下载...")
             with open(r'minecraft.zip','w') as f:
                 f.write('')
             download('https://ajjdxns.github.io/download/default.zip','minecraft.zip')
-            console.print("主文件下载完成。")
-            console.print('即将开始解压文件至"./.minecraft/defaultversion"文件夹（应该没人会往里面放什么东西吧）。')
+            logging.info("主文件下载完成。")
+            logging.info('即将开始解压文件至"./.minecraft/defaultversion"文件夹（应该没人会往里面放什么东西吧）。')
             with zipfile.ZipFile("minecraft.zip",'r') as f:
                 for file in f.namelist():
-                    console.print("[INFO] 输出文件：", file)
+                    logging.info("输出文件：", file)
                     f.extract(file,"./.minecraft/defaultversion/")  
             
         elif command == 'start game':
@@ -116,25 +121,25 @@ technological measures.''')
 
         elif command == 'login':
             #登录
-            console.print("[INFO] 开始登录...")
-            console.print("[INFO] 正在读取配置文件...")
+            logging.info("开始登录...")
+            logging.info("正在读取配置文件...")
             with open('config.json') as f:
                 config = json.load(f)
             APIRoot = config['login']['API Root']
             try:
                 RootGet = requests.get(APIRoot)
             except:
-                #出错后的红色用户提示
-                console.print("[red][ERROR] 对不起，我们遇到了一个严重错误：网络请求错误。")
-                console.print("[red][ERROR] 请尝试修改配置文件。")
+                #出错后的用户提示
+                logging.error("对不起，我们遇到了一个严重错误：网络请求错误。")
+                logging.error("请尝试修改配置文件。")
                 os._exit()
             RootGetDirt = json.loads(RootGet.text)
             try:
-                console.print("[INFO] 服务器名称："+RootGetDirt["meta"]["serverName"])
+                logging.info("服务器名称："+RootGetDirt["meta"]["serverName"])
             except:
-                console.print('[yellow][WARN] 对不起，我们遇到了一个问题：服务器未返回"serverName"字段')
-            UserName = console.input("请输入账号")
-            PassWord = 
+                logging.warn('对不起，我们遇到了一个问题：服务器未返回"serverName"字段')
+            UserName = console.input("请输入账号：")
+            PassWord = console.inpuy("请输入密码：")
 
 if __name__ == "__main__":
     main()
