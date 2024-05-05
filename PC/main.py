@@ -15,8 +15,6 @@ from rich.table import Table
 log = logging.getLogger()
 log.setLevel(logging.INFO)
 UserHeads = {"requestUser":"true"}
-formatter = logging.Formatter("[%(asctime)s] [%(filenane)s/%(levelname)s] %(message)s")
-log.setFormatter(formatter)
 
 def start():
     pass
