@@ -1,5 +1,6 @@
 {
     "login":{
+        "useMicrosoft":false,
         "API Root":"https://littleskin.cn/api/yggdrasil",
         "accessToken":""
     }
