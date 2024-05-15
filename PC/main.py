@@ -142,6 +142,24 @@ technological measures.''')
             UserName = console.input("请输入账号：")
             PassWord = console.input("请输入密码：")
             logging.info("开始登录")
+            sendlogin = {
+                "username":UserName,
+                "password":PassWord,
+                "clientToken":"ajjdxnsminecraftlauncher",
+                "requestUser":False,
+              	"agent":{
+                    "name":"Minecraft",
+                    "version":1
+                }
+            }
+            sendloginjson = json.dumps(sendlogin)
+            loginbackjson = requests.post(APIRoot+"/authserver/authenticate",data=sendloginjson)
+            loginback = json.loads(loginbackjson)
+            if loginback['selectedProfile'] == '':
+                logging.warn('登录失败，请重试')
+                continue
+            config['login']['accessToken'] = loginback['accessToken']
+            logging.info('登录成功！可以启动游戏了！')
 
 if __name__ == "__main__":
     main()
