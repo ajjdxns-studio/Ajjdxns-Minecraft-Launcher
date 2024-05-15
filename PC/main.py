@@ -127,40 +127,113 @@ technological measures.''')
             except:
                 log.error("对不起，您使用了错误的方法打开程序，请重新尝试。")
                 os._exit()
-            APIRoot = config['login']['API Root']
-            try:
-                RootGet = requests.get(APIRoot)
-            except:
-                #出错后的用户提示
-                log.error("对不起，我们遇到了一个严重错误：网络请求错误。")
-                log.error("请尝试修改配置文件。")
-                os._exit()
-            RootGetDirt = json.loads(RootGet.text)
-            try:
-                log.info("服务器名称："+RootGetDirt["meta"]["serverName"])
-            except:
-                log.warn('对不起，我们遇到了一个问题：服务器未返回"serverName"字段')
-            UserName = console.input("请输入账号：")
-            PassWord = console.input("请输入密码：")
-            log.info("开始登录")
-            sendlogin = {
-                "username":UserName,
-                "password":PassWord,
-                "clientToken":"ajjdxnsminecraftlauncher",
-                "requestUser":False,
-              	"agent":{
-                    "name":"Minecraft",
-                    "version":1
+            if config['login']['useMicrosoft'] == True:
+                console.print('Minecraft迁移至微软账号的期限已过。自2020年12月起，所有新账号已经使用了新版系统，旧的账号也将在之后迁移。')
+                webbrowser.open("https://login.live.com/oauth20_authorize.srf\
+                    ?client_id=00000000402b5328\
+                    &response_type=code\
+                    &scope=service%3A%3Auser.auth.xboxlive.com%3A%3AMBI_SSL\
+                    &redirect_uri=https%3A%2F%2Flogin.live.com%2Foauth20_desktop.srf")
+                result = input("请输入重定向链接：")
+                begin = result.find("code=") + 5
+                end = result.find("&lc")
+                code = str("")
+                for i in range(begin, end):
+                    code += result[i]
+                data = {
+                    "client_id": "00000000402b5328", 
+                    "code": code, 
+                    "grant_type": "authorization_code",
+                    "redirect_uri": "https://login.live.com/oauth20_desktop.srf",                                                                            "scope": "service::user.auth.xboxlive.com::MBI_SSL"
+                    }
+                                                                                                                url = "https://login.live.com/oauth20_token.srf"
+                                                                                                                    header = {
+                                                                                                                            "Content-Type": "application/x-www-form-urlencoded"
+                                                                                                                                }
+                                                                                                                                    res = post(url = url, data = data, headers = header)
+                                                                                                                                        dic = loads(res.text)
+                                                                                                                                            access_token = dic["access_token"]
+                                                                                                                                                # Xbox Live 验证
+                                                                                                                                                    data = dumps({
+                                                                                                                                                            "Properties": {
+                                                                                                                                                                        "AuthMethod": "RPS",
+                                                                                                                                                                                    "SiteName": "user.auth.xboxlive.com",
+                                                                                                                                                                                                "RpsTicket": access_token
+                                                                                                                                                                                                        },
+                                                                                                                                                                                                                "RelyingParty": "http://auth.xboxlive.com",
+                                                                                                                                                                                                                        "TokenType": "JWT"
+                                                                                                                                                                                                                            })
+                                                                                                                                                                                                                                url = "https://user.auth.xboxlive.com/user/authenticate"
+                                                                                                                                                                                                                                    header = {
+                                                                                                                                                                                                                                            "Content-Type": "application/json",
+                                                                                                                                                                                                                                                    "Accept": "application/json"
+                                                                                                                                                                                                                                                        }
+                                                                                                                                                                                                                                                            res = post(url = url, data = data, headers = header)
+                                                                                                                                                                                                                                                                Token = loads(res.text)["Token"]
+                                                                                                                                                                                                                                                                    uhs = str()
+                                                                                                                                                                                                                                                                        for i in loads(res.text)["DisplayClaims"]["xui"]:
+                                                                                                                                                                                                                                                                                uhs = i["uhs"]
+                                                                                                                                                                                                                                                                                    # XSTS 验证
+                                                                                                                                                                                                                                                                                        data = dumps({
+                                                                                                                                                                                                                                                                                                " Properties": {
+                                                                                                                                                                                                                                                                                                            "SandboxId": "RETAIL",
+                                                                                                                                                                                                                                                                                                                        "UserTokens": [
+                                                                                                                                                                                                                                                                                                                                        Token
+                                                                                                                                                                                                                                                                                                                                                    ]
+                                                                                                                                                                                                                                                                                                                                                            },
+                                                                                                                                                                                                                                                                                                                                                                    "RelyingParty": "rp://api.minecraftservices.com/",
+                                                                                                                                                                                                                                                                                                                                                                            "TokenType": "JWT"
+                                                                                                                                                                                                                                                                                                                                                                                })
+                                                                                                                                                                                                                                                                                                                                                                                    url = "https://xsts.auth.xboxlive.com/xsts/authorize"
+                                                                                                                                                                                                                                                                                                                                                                                        header = {
+                                                                                                                                                                                                                                                                                                                                                                                                "Content-Type": "application/json",
+                                                                                                                                                                                                                                                                                                                                                                                                        "Accept": "application/json"
+                                                                                                                                                                                                                                                                                                                                                                                                            }
+                                                                                                                                                                                                                                                                                                                                                                                                                res = post(url = url, data = data, headers = header)
+                                                                                                                                                                                                                                                                                                                                                                                                                    dic = loads(res.text)
+                                                                                                                                                                                                                                                                                                                                                                                                                        XSTS_Token = dic["Token"]
+                                                                                                                                                                                                                                                                                                                                                                                                                            # 获取Minecrat访问令牌
+                                                                                                                                                                                                                                                                                                                                                                                                                                data = dumps({
+                                                                                                                                                                                                                                                                                                                                                                                                                                        "identityToken": f"XBL3.0 x={uhs}{XSTS_Token}"
+                                                                                                                                                                                                                                                                                                                                                                                                                                            })
+                                                                                                                                                                                                                                                                                                                                                                                                                                                url = "https://api.minecraftservices.com/authentication/login_with_xbox"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                    res = post(url = url, data = data)
+                                                                                                                                                                                                                                                                                                                                                                                                                                                        print(res.text)
+            else:
+                APIRoot = config['login']['API Root']
+                try:
+                    RootGet = requests.get(APIRoot)
+                except:
+                    #出错后的用户提示
+                    log.error("对不起，我们遇到了一个严重错误：网络请求错误。")
+                    log.error("请尝试修改配置文件。")
+                    os._exit()
+                RootGetDirt = json.loads(RootGet.text)
+                try:
+                    log.info("服务器名称："+RootGetDirt["meta"]["serverName"])
+                except:
+                    log.warn('对不起，我们遇到了一个问题：服务器未返回"serverName"字段')
+                UserName = console.input("请输入账号：")
+                PassWord = console.input("请输入密码：")
+                log.info("开始登录")
+                sendlogin = {
+                    "username":UserName,
+                    "password":PassWord,
+                    "clientToken":"ajjdxnsminecraftlauncher",
+                    "requestUser":False,
+                  	"agent":{
+                        "name":"Minecraft",
+                        "version":1
+                    }
                 }
-            }
-            sendloginjson = json.dumps(sendlogin)
-            loginbackjson = requests.post(APIRoot+"/authserver/authenticate",data=sendloginjson)
-            loginback = json.loads(loginbackjson.text)
-            if loginback['selectedProfile'] == '':
-                log.warn('登录失败，请重试')
-                continue
-            config['login']['accessToken'] = loginback['accessToken']
-            log.info('登录成功！可以启动游戏了！')
+                sendloginjson = json.dumps(sendlogin)
+                loginbackjson = requests.post(APIRoot+"/authserver/authenticate",data=sendloginjson)
+                loginback = json.loads(loginbackjson.text)
+                if loginback['selectedProfile'] == '':
+                    log.warn('登录失败，请重试')
+                    continue
+                config['login']['accessToken'] = loginback['accessToken']
+                log.info('登录成功！可以启动游戏了！')
 
 if __name__ == "__main__":
     main()
