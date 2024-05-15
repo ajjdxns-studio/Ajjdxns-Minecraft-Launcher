@@ -14,6 +14,7 @@ from rich.table import Table
 
 logging.basicConfig(level=logging.INFO,format='[%(asctime)s][%(threadname)s/%(levelname)s]%(message)s')
 UserHeads = {"requestUser":"true"}
+log = logging.getLogger('MainLogger')
 
 def start():
     pass
@@ -102,15 +103,15 @@ users, your or third parties' legal rights to forbid circumvention of
 technological measures.''')
         elif command == 'download minecraft':
             #下载
-            logging.info("游戏开始下载...")
+            log.info("游戏开始下载...")
             with open(r'minecraft.zip','w') as f:
                 f.write('')
             download('https://ajjdxns.github.io/download/default.zip','minecraft.zip')
-            logging.info("主文件下载完成。")
-            logging.info('即将开始解压文件至"./.minecraft/defaultversion"文件夹（应该没人会往里面放什么东西吧）。')
+            log.info("主文件下载完成。")
+            log.info('即将开始解压文件至"./.minecraft/defaultversion"文件夹（应该没人会往里面放什么东西吧）。')
             with zipfile.ZipFile("minecraft.zip",'r') as f:
                 for file in f.namelist():
-                    logging.info("输出文件：", file)
+                    log.info("输出文件：", file)
                     f.extract(file,"./.minecraft/defaultversion/")  
             
         elif command == 'start game':
@@ -118,30 +119,30 @@ technological measures.''')
 
         elif command == 'login':
             #登录
-            logging.info("开始登录...")
-            logging.info("正在读取配置文件...")
+            log.info("开始登录...")
+            log.info("正在读取配置文件...")
             try:
                 with open('config.json') as f:
                     config = json.load(f)
             except:
-                logging.error("对不起，您使用了错误的方法打开程序，请重新尝试。")
+                log.error("对不起，您使用了错误的方法打开程序，请重新尝试。")
                 os._exit()
             APIRoot = config['login']['API Root']
             try:
                 RootGet = requests.get(APIRoot)
             except:
                 #出错后的用户提示
-                logging.error("对不起，我们遇到了一个严重错误：网络请求错误。")
-                logging.error("请尝试修改配置文件。")
+                log.error("对不起，我们遇到了一个严重错误：网络请求错误。")
+                log.error("请尝试修改配置文件。")
                 os._exit()
             RootGetDirt = json.loads(RootGet.text)
             try:
-                logging.info("服务器名称："+RootGetDirt["meta"]["serverName"])
+                log.info("服务器名称："+RootGetDirt["meta"]["serverName"])
             except:
-                logging.warn('对不起，我们遇到了一个问题：服务器未返回"serverName"字段')
+                log.warn('对不起，我们遇到了一个问题：服务器未返回"serverName"字段')
             UserName = console.input("请输入账号：")
             PassWord = console.input("请输入密码：")
-            logging.info("开始登录")
+            log.info("开始登录")
             sendlogin = {
                 "username":UserName,
                 "password":PassWord,
@@ -152,14 +153,14 @@ technological measures.''')
                     "version":1
                 }
             }
-            sendloginjson = json.dumps(sendlogin)
+            sendloginjson = json.dumps(sendlogin.text)
             loginbackjson = requests.post(APIRoot+"/authserver/authenticate",data=sendloginjson)
             loginback = json.loads(loginbackjson)
             if loginback['selectedProfile'] == '':
-                logging.warn('登录失败，请重试')
+                log.warn('登录失败，请重试')
                 continue
             config['login']['accessToken'] = loginback['accessToken']
-            logging.info('登录成功！可以启动游戏了！')
+            log.info('登录成功！可以启动游戏了！')
 
 if __name__ == "__main__":
     main()
