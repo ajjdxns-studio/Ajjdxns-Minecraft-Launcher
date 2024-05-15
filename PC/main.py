@@ -12,8 +12,7 @@ import logging
 from tqdm import tqdm
 from rich.table import Table
 
-log = logging.getLogger()
-log.setLevel(logging.INFO)
+logging.basicConfig(level=logging.INFO,format='[%(asctime)s][%(threadname)s/%(levelname)s]%(message)s')
 UserHeads = {"requestUser":"true"}
 
 def start():
@@ -141,7 +140,8 @@ technological measures.''')
             except:
                 logging.warn('对不起，我们遇到了一个问题：服务器未返回"serverName"字段')
             UserName = console.input("请输入账号：")
-            PassWord = console.inpuy("请输入密码：")
+            PassWord = console.input("请输入密码：")
+            logging.info("开始登录")
 
 if __name__ == "__main__":
     main()
