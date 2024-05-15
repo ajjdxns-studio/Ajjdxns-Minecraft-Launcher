@@ -153,9 +153,9 @@ technological measures.''')
                     "version":1
                 }
             }
-            sendloginjson = json.dumps(sendlogin.text)
+            sendloginjson = json.dumps(sendlogin)
             loginbackjson = requests.post(APIRoot+"/authserver/authenticate",data=sendloginjson)
-            loginback = json.loads(loginbackjson)
+            loginback = json.loads(loginbackjson.text)
             if loginback['selectedProfile'] == '':
                 log.warn('登录失败，请重试')
                 continue
