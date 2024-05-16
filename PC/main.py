@@ -12,9 +12,10 @@ import logging
 from tqdm import tqdm
 from rich.table import Table
 
-logging.basicConfig(level=logging.INFO,format='[%(asctime)s][%(threadname)s/%(levelname)s]%(message)s')
 UserHeads = {"requestUser":"true"}
 log = logging.getLogger('MainLogger')
+with open('config.json') as con:
+    config = json.load(con)
 
 def start():
     pass
@@ -42,6 +43,24 @@ def download(url: str, fname: str):
         for data in resp.iter_content(chunk_size=1024):
             size = file.write(data)
             bar.update(size)
+
+def downloadnew():
+    log.info("开始进行新下载任务...")
+    listUrl = config['download']['apiList'][config['download']['apiNumber']]['versionListUrl']
+    versionList = json.loads(requests.get(listUrl).text)
+    versionForUser = []
+    for i in versionList['versions']:
+        versionForUser.append(i)
+    log.info("获取版本列表...成功")
+    for v in versionForUser:
+        console.print(versionForUser.index(v),"版本:",v['id'],"\n","    发行日期:",v['releaseTime'])
+    wentDownload = console.input("请输入你想下载的版本前的数字：")
+    version = versionForUser[int(wentDownload)]
+    versionName = version['id']
+    versionIndexUrl = version['url']
+    console.print("0Forge\n1fabric\n2neoforge\n3不装加载器")
+    loadsName = ['forge','fabric','neo','vanilla']
+    loadsChose
 
 command = ""
 
@@ -121,12 +140,6 @@ technological measures.''')
             #登录
             log.info("开始登录...")
             log.info("正在读取配置文件...")
-            try:
-                with open('config.json') as f:
-                    config = json.load(f)
-            except:
-                log.error("对不起，您使用了错误的方法打开程序，请重新尝试。")
-                os._exit()
             if config['login']['useMicrosoft'] == True:
                 console.print('Minecraft迁移至微软账号的期限已过。自2020年12月起，所有新账号已经使用了新版系统，旧的账号也将在之后迁移。')
                 
