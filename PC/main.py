@@ -60,7 +60,25 @@ def downloadnew():
     versionIndexUrl = version['url']
     console.print("0Forge\n1fabric\n2neoforge\n3不装加载器")
     loadsName = ['forge','fabric','neo','vanilla']
-    loadsChose
+    loadsChose = loadsName[int(console.input("请输入你想要安装的加载器前面的数字"))]
+    if loadsChose == 'forge':
+        pass
+    elif loadsChose == 'fabric':
+        pass
+    elif loadsChose == 'neo':
+        pass
+    else:
+        installOF = not(console.input('是否需要安装optifine?(Y/n)') == 'n')
+        if installOF:
+            pass
+        else:
+            packName = console.input('请输入版本名称:')
+            if os.path.exists('./.minecraft/'+packName):
+                pass
+            elif os.path.exists('./.minecraft'):
+                os.mkdir('./.minecraft/'+packName)
+            else:
+                pass
 
 command = ""
 
@@ -120,18 +138,9 @@ the covered work, and you disclaim any intention to limit operation or
 modification of the work as a means of enforcing, against the work's
 users, your or third parties' legal rights to forbid circumvention of
 technological measures.''')
-        elif command == 'download minecraft':
+        elif command == 'download':
             #下载
-            log.info("游戏开始下载...")
-            with open(r'minecraft.zip','w') as f:
-                f.write('')
-            download('https://ajjdxns.github.io/download/default.zip','minecraft.zip')
-            log.info("主文件下载完成。")
-            log.info('即将开始解压文件至"./.minecraft/defaultversion"文件夹（应该没人会往里面放什么东西吧）。')
-            with zipfile.ZipFile("minecraft.zip",'r') as f:
-                for file in f.namelist():
-                    log.info("输出文件：", file)
-                    f.extract(file,"./.minecraft/defaultversion/")  
+            downloadnew()
             
         elif command == 'start game':
             start()
