@@ -114,6 +114,8 @@ def main():
     while True:
         command = console.input(">>>")
         if command == "quit":
+            with open('config.json','w') as con:
+                json.dump(config,con)
             os._exit(1)
         elif command == "version":
             console.print("""Ajjdxns minecraft launcher
@@ -197,8 +199,15 @@ technological measures.''')
                 sendloginjson = json.dumps(sendlogin)
                 loginbackjson = requests.post(APIRoot+"/authserver/authenticate",data=sendloginjson)
                 loginback = json.loads(loginbackjson.text)
-                if loginback['selectedProfile'] == '':
+                try:
+                    test = loginback['selectedProfile']
+                except:
                     log.warn('登录失败，请重试')
+                    continue
+                try:
+                    test = loginback['availableProfiles']
+                except:
+                    log.warn('登录失败，该用户未绑定角色')
                     continue
                 config['login']['accessToken'] = loginback['accessToken']
                 log.info('登录成功！可以启动游戏了！')
