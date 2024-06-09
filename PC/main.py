@@ -8,21 +8,35 @@ from console_start import console
 import requests
 import zipfile
 import json
-import logging
 from tqdm import tqdm
 from rich.table import Table
 
 UserHeads = {"requestUser":"true"}
-log = logging.getLogger('MainLogger')
 with open('config.json') as con:
     config = json.load(con)
+
+class Logger():
+
+    def _main_(self):
+        pass
+    
+    def info(self,msg):
+        console.print('[INFO] '+msg)
+    
+    def warn(self,msg):
+        console.print('[WARN] '+msg)
+
+    def error(self,msg):
+        console.print('[ERROR] '+msg)
+
+log = Logger()
 
 def start():
     pass
 
 def debug(func):
     def wrapper():
-        logging.debug("run {}()".format(func.__name__))
+        console.print("run {}()".format(func._name_))
         return func()
     return wrapper
   
@@ -74,7 +88,7 @@ def downloadnew():
         else:
             packName = console.input('请输入版本名称:')
             if os.path.exists('./.minecraft/'+packName):
-                pass
+                console.print('包名存在冲突！安装结束！')
             elif os.path.exists('./.minecraft'):
                 os.mkdir('./.minecraft/'+packName)
             else:
@@ -161,6 +175,7 @@ technological measures.''')
                     log.error("对不起，我们遇到了一个严重错误：网络请求错误。")
                     log.error("请尝试修改配置文件。")
                     os._exit()
+                print(RootGet.text)
                 RootGetDirt = json.loads(RootGet.text)
                 try:
                     log.info("服务器名称："+RootGetDirt["meta"]["serverName"])
