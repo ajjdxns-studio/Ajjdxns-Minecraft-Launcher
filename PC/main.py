@@ -206,6 +206,9 @@ technological measures.''')
                     "TokenType": "JWT"
                     }
                 Xbox_back = requests.post(url='https://user.auth.xboxlive.com/user/authenticate',headers={"Content-Type": "application/json","Accept": "application/json"},data=Xbox_data)
+                Xbox_json = json.loads(Xbox_back.text)
+                token = Xbox_json['Token']
+                uhs = Xbox_json['DisplayClaims']['xui'][1]['uhs']
             else:
                 log.warn('您似乎正在使用外置登录，外置登录目前功能不稳定，有正版尽量使用正版。')
                 APIRoot = config['login']['API Root']
