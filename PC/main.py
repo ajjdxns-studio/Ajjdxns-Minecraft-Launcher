@@ -8,8 +8,8 @@ from console_start import console
 import requests
 import zipfile
 import json
+import webbrowser
 from tqdm import tqdm
-from rich.table import Table
 
 UserHeads = {"requestUser":"true"}
 with open('config.json') as con:
@@ -20,6 +20,12 @@ class Logger():
     def _main_(self):
         pass
     
+    def input(self,msg):
+        return console.input('[INPUT] '+msg)
+
+    def tip(self,msg):
+        console.print('[TIP] '+msg)
+
     def info(self,msg):
         console.print('[INFO] '+msg)
     
@@ -167,7 +173,39 @@ technological measures.''')
             log.info("正在读取配置文件...")
             if config['login']['useMicrosoft'] == True:
                 log.warn('Minecraft迁移至微软账号的期限已过。自2020年12月起，所有新账号已经使用了新版系统，旧的账号也将在之后迁移。')
-                
+                log.info('正在尝试跳转至登录页面...')
+                try:
+                    webbrowser.open('https://login.live.com/oauth20_authorize.srf?client_id=00000000402b5328&response_type=code&scope=service%3A%3Auser.auth.xboxlive.com%3A%3AMBI_SSL&redirect_uri=https%3A%2F%2Flogin.live.com%2Foauth20_desktop.srf')
+                except:
+                    log.warn('您貌似没有浏览器呢，请使用下面的URL在浏览器中打开以继续。')
+                    log.info('https://login.live.com/oauth20_authorize.srf?client_id=00000000402b5328&response_type=code&scope=service%3A%3Auser.auth.xboxlive.com%3A%3AMBI_SSL&redirect_uri=https%3A%2F%2Flogin.live.com%2Foauth20_desktop.srf')
+                    log.tip('这边建议您使用微软的edge呢。')
+                backurl = log.input('接下来，请输入重定向后空白页面的链接：')
+                begin = backurl.find("code=") + 5
+                end = backurl.find("&lc")
+                code = str("")
+                for i in range(begin, end):
+                    code += backurl[i]
+                data = {
+                    "client_id": "00000000402b5328", 
+                    "code": code, 
+                    "grant_type": "authorization_code",
+                    "redirect_uri": "https://login.live.com/oauth20_desktop.srf",
+                    "scope": "service::user.auth.xboxlive.com::MBI_SSL"
+                    }
+                token_back = requests.post(url='https://login.live.com/oauth20_token.srf',headers={"Content-Type": "application/x-www-form-urlencoded"},data=data)
+                token_json = json.loads(token_back.text)
+                access_token = token_json["access_token"]
+                Xbox_data = {
+                    "Properties": {
+                        "AuthMethod": "RPS",
+                        "SiteName": "user.auth.xboxlive.com",
+                        "RpsTicket": "d="+access_token
+                        },
+                    "RelyingParty": "http://auth.xboxlive.com",
+                    "TokenType": "JWT"
+                    }
+                Xbox_back = requests.post(url='https://user.auth.xboxlive.com/user/authenticate',headers={"Content-Type": "application/json","Accept": "application/json"},data=Xbox_data)
             else:
                 log.warn('您似乎正在使用外置登录，外置登录目前功能不稳定，有正版尽量使用正版。')
                 APIRoot = config['login']['API Root']
@@ -183,8 +221,8 @@ technological measures.''')
                     log.info("服务器名称："+RootGetDirt["meta"]["serverName"])
                 except:
                     log.warn('对不起，我们遇到了一个问题：服务器未返回"serverName"字段')
-                UserName = console.input("请输入账号：")
-                PassWord = console.input("请输入密码：")
+                UserName = log.input("请输入账号：")
+                PassWord = log.input("请输入密码：")
                 log.info("开始登录")
                 sendlogin = {
                     "username":UserName,
@@ -199,10 +237,6 @@ technological measures.''')
                 sendloginjson = json.dumps(sendlogin)
                 loginbackjson = requests.post(APIRoot+"/authserver/authenticate",json=sendloginjson)
                 loginback = json.loads(loginbackjson.text)
-                console.print(loginbackjson.text)
-                test = loginback['errorMessage']
-                em = test.decode('utf-8')
-                log.warn(em)
                 try:
                     test = loginback['selectedProfile']
                 except:
