@@ -1,18 +1,1 @@
-{
-    "login":{
-        "useMicrosoft":false,
-        "API Root":"https://littleskin.cn/api/yggdrasil",
-        "accessToken":""
-    },
-    "download":{
-        "useImageApi":true,
-        "apiList":[
-            {
-                "name":"bmclapi",
-                "number":1,
-                "versionListUrl":"https://bmclapi2.bangbang93.com/mc/game/version_manifest.json"
-            }
-        ],
-        "apiNumber":1
-    }
-}
+{"login": {"useMicrosoft": false, "API Root": "https://littleskin.cn/api/yggdrasil", "accessToken": ""}, "download": {"useImageApi": true, "apiList": [{"name": "bmclapi", "number": 1, "versionListUrl": "https://bmclapi2.bangbang93.com/mc/game/version_manifest.json"}], "apiNumber": 1}}

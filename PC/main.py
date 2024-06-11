@@ -166,9 +166,10 @@ technological measures.''')
             log.info("开始登录...")
             log.info("正在读取配置文件...")
             if config['login']['useMicrosoft'] == True:
-                console.print('Minecraft迁移至微软账号的期限已过。自2020年12月起，所有新账号已经使用了新版系统，旧的账号也将在之后迁移。')
+                log.warn('Minecraft迁移至微软账号的期限已过。自2020年12月起，所有新账号已经使用了新版系统，旧的账号也将在之后迁移。')
                 
             else:
+                log.warn('您似乎正在使用外置登录，外置登录目前功能不稳定，有正版尽量使用正版。')
                 APIRoot = config['login']['API Root']
                 try:
                     RootGet = requests.get(APIRoot)
@@ -177,7 +178,6 @@ technological measures.''')
                     log.error("对不起，我们遇到了一个严重错误：网络请求错误。")
                     log.error("请尝试修改配置文件。")
                     os._exit()
-                print(RootGet.text)
                 RootGetDirt = json.loads(RootGet.text)
                 try:
                     log.info("服务器名称："+RootGetDirt["meta"]["serverName"])
@@ -189,16 +189,20 @@ technological measures.''')
                 sendlogin = {
                     "username":UserName,
                     "password":PassWord,
-                    "clientToken":"ajjdxnsminecraftlauncher",
-                    "requestUser":False,
+                    "clientToken":"",
+                    "requestUser":True,
                   	"agent":{
                         "name":"Minecraft",
                         "version":1
                     }
                 }
                 sendloginjson = json.dumps(sendlogin)
-                loginbackjson = requests.post(APIRoot+"/authserver/authenticate",data=sendloginjson)
+                loginbackjson = requests.post(APIRoot+"/authserver/authenticate",json=sendloginjson)
                 loginback = json.loads(loginbackjson.text)
+                console.print(loginbackjson.text)
+                test = loginback['errorMessage']
+                em = test.decode('utf-8')
+                log.warn(em)
                 try:
                     test = loginback['selectedProfile']
                 except:
